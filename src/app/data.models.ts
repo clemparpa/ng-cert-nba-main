@@ -31,3 +31,9 @@ export interface Stats {
 }
 
 export type Result = 'W' | 'L';
+
+export interface Conference {
+  name: string;
+  label: string;
+  divisions: Array<string>;
+}
