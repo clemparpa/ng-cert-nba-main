@@ -8,6 +8,12 @@ span{
   cursor: pointer;
 }
 
+.tag-container{
+  max-width: 200px; 
+  word-wrap: break-word;
+  line-height: 30px;
+}
+
 mark.W {
   background-color: green;
 }

@@ -2,7 +2,7 @@ import { NgModule, inject } from '@angular/core';
 import { CanActivateFn, RouterModule, Routes } from '@angular/router';
 import { GameResultsComponent } from './game-results/game-results.component';
 import { GameStatsComponent } from './game-stats/game-stats.component';
-import { GameStatsStore } from './game-stats.store';
+import { GameStatsStore } from './game-stats/game-stats.store';
 import { map, tap } from 'rxjs';
 
 const setGameStatsStoreGuard: CanActivateFn = () => {

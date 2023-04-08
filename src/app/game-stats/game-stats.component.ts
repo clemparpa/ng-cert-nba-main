@@ -1,8 +1,8 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Team } from '../data.models';
-import { tap } from 'rxjs';
+import { shareReplay, take, tap } from 'rxjs';
 import { NbaService } from '../nba.service';
-import { GameStatsStore } from '../game-stats.store';
+import { GameStatsStore } from './game-stats.store';
 import { NonNullableFormBuilder } from '@angular/forms';
 
 @Component({
@@ -16,6 +16,7 @@ export class GameStatsComponent {
 
   public divisionControl = this.fb.control<string>('');
   public conferenceControl = this.fb.control<string>('');
+  public daysControl = this.fb.control<number>(12);
   public conferences$ = this.store.conferences$;
   public divisions$ = this.store.filteredDivisions$;
   public teams$ = this.store.filteredTeams$;
@@ -25,6 +26,12 @@ export class GameStatsComponent {
     private store: GameStatsStore,
     protected nbaService: NbaService
   ) {
+    this.store.days$
+      .pipe(
+        take(1),
+        tap((days) => this.daysControl.setValue(days))
+      )
+      .subscribe();
     this.store.updateDivision(this.divisionControl.valueChanges);
     this.store.updateConference(
       this.conferenceControl.valueChanges.pipe(
@@ -35,6 +42,7 @@ export class GameStatsComponent {
         )
       )
     );
+    this.store.updateDays(this.daysControl.valueChanges);
   }
 
   trackTeam(teamId: string): void {

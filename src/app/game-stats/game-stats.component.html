@@ -6,19 +6,24 @@
         [value]="conference.name"
         *ngFor="let conference of conferences$ | async"
       >
-        {{ conference.label }}
+        {{ conference.label }} conference
       </option>
     </select>
     <select [formControl]="divisionControl">
       <option [value]="''">Any</option>
       <option [value]="division" *ngFor="let division of divisions$ | async">
-        {{ division }}
+        {{ division }} division
       </option>
     </select>
     <select #teamSelect>
       <option [value]="team.id" *ngFor="let team of teams$ | async">
         {{ team.full_name }}
       </option>
+    </select>
+    <select [formControl]="daysControl">
+      <option [value]="6">6 days</option>
+      <option [value]="12">12 days</option>
+      <option [value]="20">20 days</option>
     </select>
 
     <button class="primary" (click)="trackTeam(teamSelect.value)">

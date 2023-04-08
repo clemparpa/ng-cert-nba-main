@@ -6,19 +6,20 @@ import {
   map,
   Observable,
   of,
+  shareReplay,
   skipWhile,
   Subject,
   take,
   takeUntil,
   tap,
-  withLatestFrom,
 } from 'rxjs';
-import { Conference, Team } from './data.models';
-import { NbaService } from './nba.service';
-import { CONFERENCES, DIVISIONS } from './constants';
+import { Conference, Team } from '../data.models';
+import { NbaService } from '../nba.service';
+import { CONFERENCES, DIVISIONS } from '../constants';
 
 export interface GameStatsState {
   teams: Array<Team>;
+  days: number;
   selectedConference: Conference | null;
   selectedDivision: string;
   divisions: Array<string>;
@@ -28,6 +29,7 @@ export interface GameStatsState {
 const initialState: GameStatsState = {
   divisions: DIVISIONS,
   conferences: CONFERENCES,
+  days: 12,
   teams: [],
   selectedConference: null,
   selectedDivision: '',
@@ -44,13 +46,17 @@ export class GameStatsStore implements OnDestroy {
 
   public conferences$ = of(this.state.value.conferences);
 
+  public days$ = this.state$.pipe(
+    distinctUntilKeyChanged('days'),
+    map((state) => state.days),
+    shareReplay(1)
+  );
+
   public filteredDivisions$ = this.state$.pipe(
     distinctUntilKeyChanged('selectedConference'),
     map((state) => {
       if (state.selectedConference !== null) {
-        return state.divisions.filter((division) =>
-          state.selectedConference!.divisions.includes(division)
-        );
+        return state.selectedConference.divisions;
       }
       return state.divisions;
     })
@@ -64,18 +70,15 @@ export class GameStatsStore implements OnDestroy {
         prevState.selectedDivision === newState.selectedDivision
     ),
     map((state) => {
-      let teams = state.teams;
-      if (state.selectedConference !== null) {
-        teams = teams.filter(
-          (team) => team.conference === state.selectedConference!.name
-        );
-      }
-      if (state.selectedDivision !== '') {
-        teams = teams.filter(
+      if (state.selectedDivision !== '')
+        return state.teams.filter(
           (team) => team.division === state.selectedDivision
         );
-      }
-      return teams;
+      if (state.selectedConference !== null)
+        return state.teams.filter(
+          (team) => team.conference === state.selectedConference!.name
+        );
+      return state.teams;
     })
   );
 
@@ -108,10 +111,9 @@ export class GameStatsStore implements OnDestroy {
   public updateDivision(divisionChange$: Observable<string>) {
     divisionChange$
       .pipe(
-        withLatestFrom(this.state$),
-        tap(([division, state]) => {
+        tap((division) => {
           this.state.next({
-            ...state,
+            ...this.state.value,
             selectedDivision: division,
           });
         }),
@@ -123,16 +125,30 @@ export class GameStatsStore implements OnDestroy {
   public updateConference(conferenceChange$: Observable<string>) {
     conferenceChange$
       .pipe(
-        withLatestFrom(this.state$),
-        tap(([conferenceName, state]) => {
+        tap((conferenceName) => {
           this.state.next({
-            ...state,
+            ...this.state.value,
             selectedConference:
-              state.conferences.find((conf) => conf.name === conferenceName) ??
-              null,
+              this.state.value.conferences.find(
+                (conf) => conf.name === conferenceName
+              ) ?? null,
             selectedDivision: '',
           });
         }),
+        takeUntil(this.onDestroy$)
+      )
+      .subscribe();
+  }
+
+  public updateDays(daysChange$: Observable<number>) {
+    daysChange$
+      .pipe(
+        tap((days) =>
+          this.state.next({
+            ...this.state.value,
+            days: days,
+          })
+        ),
         takeUntil(this.onDestroy$)
       )
       .subscribe();

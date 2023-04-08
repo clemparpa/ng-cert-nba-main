@@ -1,26 +1,27 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {Observable, tap} from 'rxjs';
-import {NbaService} from '../nba.service';
-import {Game, Stats, Team} from '../data.models';
+import { Component, Input, OnInit, inject } from '@angular/core';
+import { Observable, Subject } from 'rxjs';
+import { Game, Stats, Team } from '../data.models';
+import { TeamStatsStore } from './team-stats.store';
+import { NbaService } from '../nba.service';
 
 @Component({
   selector: 'app-team-stats',
   templateUrl: './team-stats.component.html',
-  styleUrls: ['./team-stats.component.css']
+  styleUrls: ['./team-stats.component.css'],
+  providers: [TeamStatsStore],
 })
 export class TeamStatsComponent implements OnInit {
-
   @Input()
   team!: Team;
 
-  games$!: Observable<Game[]>;
-  stats!: Stats;
-  constructor(protected nbaService: NbaService) { }
+  private store = inject(TeamStatsStore);
+  public nbaService = inject(NbaService);
+  public games$: Observable<Game[]> = this.store.games$;
+  public stats$: Observable<Stats> = this.store.stats$;
+  public days$: Observable<number> = this.store.days$;
 
   ngOnInit(): void {
-    this.games$ = this.nbaService.getLastResults(this.team, 12).pipe(
-      tap(games =>  this.stats = this.nbaService.getStatsFromGames(games, this.team))
-    )
+    this.store.setTeam(this.team);
+    this.store.onDaysChangeEffect();
   }
-
 }
