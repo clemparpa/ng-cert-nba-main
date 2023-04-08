@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { Team } from '../data.models';
 import { tap } from 'rxjs';
 import { NbaService } from '../nba.service';
@@ -9,6 +9,7 @@ import { NonNullableFormBuilder } from '@angular/forms';
   selector: 'app-game-stats',
   templateUrl: './game-stats.component.html',
   styleUrls: ['./game-stats.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GameStatsComponent {
   allTeams: Team[] = [];

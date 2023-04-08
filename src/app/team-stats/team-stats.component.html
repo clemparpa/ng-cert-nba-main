@@ -1,3 +1,18 @@
+<app-modal #modal>
+  <div class="on-remove-modal">
+    <span class="on-remove-modal--info"
+      >Are you sure you want to remove this team?</span
+    >
+    <div class="on-remove-modal--actions">
+      <button (click)="modal.close()">No</button>
+      <button (click)="nbaService.removeTrackedTeam(team); modal.close()">
+        Yes
+      </button>
+    </div>
+  </div>
+</app-modal>
+
+
 <div class="card" *ngIf="games$ | async as games">
   <div>
     <h3>{{team.full_name}} [{{team.abbreviation}}] <span (click)="nbaService.removeTrackedTeam(team)">&times;</span></h3>

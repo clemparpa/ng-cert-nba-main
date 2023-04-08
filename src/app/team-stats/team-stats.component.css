@@ -24,3 +24,25 @@ mark {
 .card {
   max-width: 100%;
 }
+
+.on-remove-modal{
+  display: flex;
+  width: 340px;
+  height: 140px;
+  flex-direction: column;
+  position: relative;
+  align-items: center;
+  justify-content: center;
+}
+
+.on-remove-modal--info{
+  width: 100%; 
+  text-align: center; 
+  padding-bottom: 10px;
+}
+
+.on-remove-modal--actions{
+  position: absolute; 
+  bottom: 0; 
+  left: 0;
+}
