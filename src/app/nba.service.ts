@@ -3,13 +3,14 @@ import { HttpClient } from '@angular/common/http';
 import { map, Observable } from 'rxjs';
 import { format, subDays } from 'date-fns';
 import { Game, Stats, Team } from './data.models';
+import environment
 
 @Injectable({
   providedIn: 'root',
 })
 export class NbaService {
   private headers = {
-    'X-RapidAPI-Key': '1333136286mshe5ca17bc211c98cp189fb4jsn290829ee8dac',
+    'X-RapidAPI-Key': environment.key,
     'X-RapidAPI-Host': 'free-nba.p.rapidapi.com',
   };
   private API_URL = 'https://free-nba.p.rapidapi.com';
